@@ -1,0 +1,114 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Users
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == userId
+        && incoming().name is string && incoming().name.size() <= 100
+        && incoming().email is string && incoming().email.size() <= 120
+        && incoming().department is string && incoming().department.size() <= 80
+        && incoming().isVerified is bool;
+      allow update: if isSignedIn() && request.auth.uid == userId
+        && incoming().diff(existing()).affectedKeys().hasOnly(['bio', 'skills', 'avatar', 'updatedAt', 'department', 'yearOfStudy']);
+      allow delete: if false;
+    }
+
+    // Feed Posts
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && incoming().authorId == request.auth.uid
+        && incoming().authorName is string && incoming().authorName.size() <= 100
+        && incoming().mediaUrl is string && incoming().mediaUrl.size() <= 500
+        && incoming().caption is string && incoming().caption.size() <= 1000;
+      allow update: if isSignedIn() && (
+        (incoming().diff(existing()).affectedKeys().hasOnly(['likesCount', 'commentsCount'])) ||
+        (existing().authorId == request.auth.uid && incoming().diff(existing()).affectedKeys().hasOnly(['caption', 'tags', 'departmentTag']))
+      );
+      allow delete: if isSignedIn() && existing().authorId == request.auth.uid;
+
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isSignedIn()
+          && incoming().authorId == request.auth.uid
+          && incoming().text is string && incoming().text.size() <= 500;
+        allow update, delete: if isSignedIn() && existing().authorId == request.auth.uid;
+      }
+    }
+
+    // Study Groups
+    match /studyGroups/{groupId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && incoming().createdBy == request.auth.uid
+        && incoming().name is string && incoming().name.size() <= 120
+        && incoming().primaryDept is string && incoming().primaryDept.size() <= 80;
+      allow update: if isSignedIn() && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['membersCount', 'meetingSchedule']) ||
+        (existing().createdBy == request.auth.uid)
+      );
+      allow delete: if isSignedIn() && existing().createdBy == request.auth.uid;
+
+      match /messages/{messageId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn()
+          && incoming().senderId == request.auth.uid
+          && incoming().text is string && incoming().text.size() <= 1000;
+        allow update, delete: if false;
+      }
+    }
+
+    // Direct Messages
+    match /messages/{messageId} {
+      allow read: if isSignedIn() && (
+        resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid
+      );
+      allow create: if isSignedIn()
+        && incoming().senderId == request.auth.uid
+        && incoming().receiverId is string && incoming().receiverId.size() <= 128
+        && incoming().text is string && incoming().text.size() <= 1000;
+      allow update, delete: if false;
+    }
+
+    // Campus Events
+    match /events/{eventId} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && incoming().title is string && incoming().title.size() <= 120
+        && incoming().department is string && incoming().department.size() <= 80;
+      allow update: if isSignedIn()
+        && incoming().diff(existing()).affectedKeys().hasOnly(['attendeesCount']);
+      allow delete: if false;
+    }
+
+    // Academic Records (Grades & GPA)
+    match /academicRecords/{recordId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create, update: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow delete: if false;
+    }
+  }
+}

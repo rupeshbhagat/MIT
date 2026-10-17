@@ -1,0 +1,6 @@
+{
+  "name": "MIT ADT CampusGram - Social & Student Hub",
+  "description": "Exclusive Instagram-style campus network for MIT University students. Features photo filters, real-time messaging, cross-department study groups, event alerts, university email verification, and semester GPA grade cards tracker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

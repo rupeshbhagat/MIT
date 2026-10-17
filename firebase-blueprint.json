@@ -1,0 +1,184 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Student user profile information with university department and verification status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "User identifier" },
+        "name": { "type": "string", "maxLength": 100, "description": "Full student name" },
+        "email": { "type": "string", "pattern": "^[a-zA-Z0-9._%+-]+@mituniversity\\.ac\\.in$", "description": "Verified university email address" },
+        "department": { "type": "string", "maxLength": 80, "description": "Department or school name" },
+        "yearOfStudy": { "type": "string", "maxLength": 20, "description": "Academic year (e.g. 3rd Year, B.Tech)" },
+        "prnNumber": { "type": "string", "maxLength": 30, "description": "Permanent registration number" },
+        "avatar": { "type": "string", "maxLength": 500, "description": "Profile picture URL" },
+        "bio": { "type": "string", "maxLength": 300, "description": "Brief student bio" },
+        "isVerified": { "type": "boolean", "description": "University email verification flag" },
+        "skills": { "type": "array", "description": "List of student skills" },
+        "createdAt": { "type": "string", "description": "Account creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Account update timestamp" }
+      },
+      "required": ["id", "name", "email", "department", "isVerified"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Social feed post with photo filters and department tagging",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Post identifier" },
+        "authorId": { "type": "string", "description": "Author user ID" },
+        "authorName": { "type": "string", "maxLength": 100, "description": "Author name" },
+        "authorAvatar": { "type": "string", "maxLength": 500, "description": "Author avatar" },
+        "authorDept": { "type": "string", "maxLength": 80, "description": "Author university department" },
+        "mediaUrl": { "type": "string", "maxLength": 500, "description": "Image URL" },
+        "filterName": { "type": "string", "maxLength": 50, "description": "Applied photo filter name" },
+        "caption": { "type": "string", "maxLength": 1000, "description": "Post caption" },
+        "departmentTag": { "type": "string", "maxLength": 80, "description": "Target department tag" },
+        "likesCount": { "type": "number", "description": "Number of likes" },
+        "commentsCount": { "type": "number", "description": "Number of comments" },
+        "tags": { "type": "array", "description": "Hashtags and mentions" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "authorId", "authorName", "mediaUrl", "createdAt"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "Comment on a post",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Comment ID" },
+        "postId": { "type": "string", "description": "Parent post ID" },
+        "authorId": { "type": "string", "description": "Commenter ID" },
+        "authorName": { "type": "string", "maxLength": 100, "description": "Commenter name" },
+        "authorAvatar": { "type": "string", "maxLength": 500, "description": "Commenter avatar" },
+        "authorDept": { "type": "string", "maxLength": 80, "description": "Commenter department" },
+        "text": { "type": "string", "maxLength": 500, "description": "Comment content" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "postId", "authorId", "authorName", "text", "createdAt"]
+    },
+    "StudyGroup": {
+      "title": "StudyGroup",
+      "description": "Cross-department study group",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Group ID" },
+        "name": { "type": "string", "maxLength": 120, "description": "Study group name" },
+        "description": { "type": "string", "maxLength": 500, "description": "Study group goals" },
+        "primaryDept": { "type": "string", "maxLength": 80, "description": "Host department" },
+        "targetDepts": { "type": "array", "description": "Collaborating departments" },
+        "topic": { "type": "string", "maxLength": 100, "description": "Subject or project topic" },
+        "membersCount": { "type": "number", "description": "Member count" },
+        "createdBy": { "type": "string", "description": "Creator user ID" },
+        "creatorName": { "type": "string", "maxLength": 100, "description": "Creator name" },
+        "meetingSchedule": { "type": "string", "maxLength": 120, "description": "Schedule info" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "name", "primaryDept", "topic", "createdBy", "createdAt"]
+    },
+    "GroupMessage": {
+      "title": "GroupMessage",
+      "description": "Message inside a study group chat",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Message ID" },
+        "groupId": { "type": "string", "description": "Study group ID" },
+        "senderId": { "type": "string", "description": "Sender user ID" },
+        "senderName": { "type": "string", "maxLength": 100, "description": "Sender name" },
+        "senderDept": { "type": "string", "maxLength": 80, "description": "Sender department" },
+        "text": { "type": "string", "maxLength": 1000, "description": "Message text" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "groupId", "senderId", "senderName", "text", "createdAt"]
+    },
+    "DirectMessage": {
+      "title": "DirectMessage",
+      "description": "Direct chat message between campus students",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Message ID" },
+        "conversationId": { "type": "string", "description": "Combined user IDs key" },
+        "senderId": { "type": "string", "description": "Sender user ID" },
+        "senderName": { "type": "string", "maxLength": 100, "description": "Sender name" },
+        "senderAvatar": { "type": "string", "maxLength": 500, "description": "Sender avatar" },
+        "receiverId": { "type": "string", "description": "Receiver user ID" },
+        "receiverName": { "type": "string", "maxLength": 100, "description": "Receiver name" },
+        "text": { "type": "string", "maxLength": 1000, "description": "Chat message" },
+        "mediaUrl": { "type": "string", "maxLength": 500, "description": "Optional image URL" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "conversationId", "senderId", "receiverId", "text", "createdAt"]
+    },
+    "CampusEvent": {
+      "title": "CampusEvent",
+      "description": "University event announcement and notification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Event ID" },
+        "title": { "type": "string", "maxLength": 120, "description": "Event title" },
+        "description": { "type": "string", "maxLength": 600, "description": "Event description" },
+        "department": { "type": "string", "maxLength": 80, "description": "Organizing department" },
+        "category": { "type": "string", "maxLength": 50, "description": "Cultural, Tech, Hackathon, Sports, Workshop" },
+        "date": { "type": "string", "maxLength": 50, "description": "Event date" },
+        "time": { "type": "string", "maxLength": 50, "description": "Event time" },
+        "venue": { "type": "string", "maxLength": 100, "description": "Campus venue" },
+        "bannerUrl": { "type": "string", "maxLength": 500, "description": "Banner image" },
+        "attendeesCount": { "type": "number", "description": "RSVP count" },
+        "isFeatured": { "type": "boolean", "description": "Featured banner" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "title", "department", "category", "date", "venue", "createdAt"]
+    },
+    "AcademicRecord": {
+      "title": "AcademicRecord",
+      "description": "Student grades cards and cumulative GPA history",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Record ID" },
+        "userId": { "type": "string", "description": "Student user ID" },
+        "studentName": { "type": "string", "maxLength": 100, "description": "Student name" },
+        "prn": { "type": "string", "maxLength": 30, "description": "University PRN" },
+        "department": { "type": "string", "maxLength": 80, "description": "Academic department" },
+        "cumulativeGpa": { "type": "number", "description": "Cumulative GPA / 10" },
+        "totalCredits": { "type": "number", "description": "Total earned credits" },
+        "semesters": { "type": "array", "description": "List of semester grade cards" },
+        "updatedAt": { "type": "string", "description": "Last calculation timestamp" }
+      },
+      "required": ["id", "userId", "prn", "cumulativeGpa", "semesters", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Student profiles with department and verification status"
+    },
+    "/posts/{postId}": {
+      "schema": "Post",
+      "description": "Public campus social feed posts with filters"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Comments attached to feed posts"
+    },
+    "/studyGroups/{groupId}": {
+      "schema": "StudyGroup",
+      "description": "Cross-department study groups"
+    },
+    "/studyGroups/{groupId}/messages/{messageId}": {
+      "schema": "GroupMessage",
+      "description": "Messages inside study group discussions"
+    },
+    "/messages/{messageId}": {
+      "schema": "DirectMessage",
+      "description": "Direct student-to-student messaging"
+    },
+    "/events/{eventId}": {
+      "schema": "CampusEvent",
+      "description": "University events, workshops, fests and announcements"
+    },
+    "/academicRecords/{recordId}": {
+      "schema": "AcademicRecord",
+      "description": "Student semester grade cards and cumulative GPA records"
+    }
+  }
+}
